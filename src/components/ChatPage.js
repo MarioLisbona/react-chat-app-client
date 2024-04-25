@@ -8,7 +8,22 @@ const ChatPage = ({ socket }) => {
   const [messages, setMessages] = useState([]);
   useEffect(() => {
     socket.on("messageResponse", (data) => setMessages([...messages, data]));
+
+    console.log("Inside useEffect", messages);
   }, [socket, messages]);
+
+  // useEffect(() => {
+  //   const handleNewMessage = (data) => {
+  //     setMessages((prevMessages) => [...prevMessages, data]);
+  //   };
+
+  //   socket.on("messageResponse", handleNewMessage);
+
+  //   return () => {
+  //     // Clean up socket event listener when component unmounts
+  //     socket.off("messageResponse", handleNewMessage);
+  //   };
+  // }, [socket]);
 
   return (
     <div className="chat">
