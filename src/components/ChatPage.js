@@ -1,35 +1,27 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ChatBar from "./ChatBar";
 import ChatBody from "./ChatBody";
 import ChatFooter from "./ChatFooter";
-import { useEffect, useState } from "react";
 
 const ChatPage = ({ socket }) => {
   const [messages, setMessages] = useState([]);
+  const [typingStatus, setTypingStatus] = useState("");
+  const lastMessageRef = useRef(null);
+
   useEffect(() => {
     socket.on("messageResponse", (data) => setMessages([...messages, data]));
-
-    console.log("Inside useEffect", messages);
   }, [socket, messages]);
 
-  // useEffect(() => {
-  //   const handleNewMessage = (data) => {
-  //     setMessages((prevMessages) => [...prevMessages, data]);
-  //   };
-
-  //   socket.on("messageResponse", handleNewMessage);
-
-  //   return () => {
-  //     // Clean up socket event listener when component unmounts
-  //     socket.off("messageResponse", handleNewMessage);
-  //   };
-  // }, [socket]);
+  useEffect(() => {
+    // 👇️ scroll to bottom every time messages change
+    lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   return (
     <div className="chat">
-      <ChatBar />
+      <ChatBar socket={socket} />
       <div className="chat__main">
-        <ChatBody messages={messages} />
+        <ChatBody messages={messages} lastMessageRef={lastMessageRef} />
         <ChatFooter socket={socket} />
       </div>
     </div>
